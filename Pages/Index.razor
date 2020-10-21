@@ -1,0 +1,17 @@
+﻿@page "/"
+
+<h1>Grid paging performance sample</h1>
+
+<p>Examine the Logs folder (should be created inside the project root, bin/Debug or bin/Release) and look for potentially unnecessary queries. Relevant log entries will start after entries containing "@(typeof(Index).FullName)".</p>
+<p>Current correlation id: @CorrelationAccessor.Current?.GetCorrelationId()</p>
+
+<SfGrid DataSource="@Forecasts" AllowPaging="true" TValue="WeatherForecast" Width="100%">
+    <GridPageSettings PageSize="10"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(WeatherForecast.Id) HeaderText="Id" IsPrimaryKey="true"></GridColumn>
+        <GridColumn Field=@nameof(WeatherForecast.TemperatureC) HeaderText="TempC"></GridColumn>
+        <GridColumn Field=@nameof(WeatherForecast.TemperatureF) HeaderText="TempF"></GridColumn>
+        <GridColumn Field=@nameof(WeatherForecast.Date) HeaderText="Date"></GridColumn>
+        <GridColumn Field=@nameof(WeatherForecast.Summary) HeaderText="Summary"></GridColumn>
+    </GridColumns>
+</SfGrid>

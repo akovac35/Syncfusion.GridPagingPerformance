@@ -1,0 +1,51 @@
+{
+  "Serilog": {
+
+    "MinimumLevel": {
+      "Default": "Verbose",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.EntityFrameworkCore.Database.Command": "Verbose"
+      }
+    },
+    "Enrich": [
+      "WithThreadId"
+    ],
+    "Destructure": [
+      {
+        "Name": "ToMaximumDepth",
+        "Args": { "maximumDestructuringDepth": 5 }
+      },
+      {
+        "Name": "ToMaximumStringLength",
+        "Args": { "maximumStringLength": 1000 }
+      },
+      {
+        "Name": "ToMaximumCollectionCount",
+        "Args": { "maximumCollectionCount": 20 }
+      }
+    ],
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] {Level:u3} {ThreadId} {CorrelationId} <{SourceContext}:{CallerMemberName}:{CallerLineNumber}> {Message}{NewLine}{Exception}",
+          "restrictedToMinimumLevel": "Warning"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Logs\\trace.log",
+          "rollingInterval": "Day",
+          "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] {Level:u3} {ThreadId} {CorrelationId} <{SourceContext}:{CallerMemberName}:{CallerLineNumber}> {Message}{NewLine}{Exception}",
+          "fileSizeLimitBytes": 1073741824,
+          "rollOnFileSizeLimit": true,
+          "retainedFileCountLimit": 31,
+          "shared": true,
+          "restrictedToMinimumLevel": "Verbose"
+        }
+      }
+    ]
+  }
+}
