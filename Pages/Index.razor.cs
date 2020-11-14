@@ -45,6 +45,8 @@ namespace Syncfusion.GridPagingPerformance.Pages
         void Refresh()
         {
             Grid.Refresh();
+
+            LastRefresh = DateTime.Now;
         }
 
         protected virtual void Dispose(bool disposing)
