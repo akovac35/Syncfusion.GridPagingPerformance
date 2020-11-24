@@ -1,4 +1,6 @@
-﻿using com.github.akovac35.Logging;
+﻿#nullable enable
+
+using com.github.akovac35.Logging;
 using com.github.akovac35.Logging.Correlation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +16,22 @@ using System.Linq;
 namespace Syncfusion.GridPagingPerformance.Pages
 {
     public partial class Index : ComponentBase, IDisposable
-    {
-        bool disposedValue;
-        
+    {    
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.    
         [Inject]
         ILogger<Index> Logger { get; set; }
         
         [Inject]
         CorrelationProviderAccessor CorrelationAccessor { get; set; }
 
+        SfGrid<WeatherForecast> Grid { get; set; }
+        public Query GridQuery { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+        bool disposedValue;
         int? TempCFilter { get; set; }
         DateTime LastRefresh = DateTime.Now;
-        SfGrid<WeatherForecast> Grid { get; set; }
-
+        
         protected override void OnInitialized()
         {
             Logger.Here(l => l.Entering());
@@ -39,7 +44,8 @@ namespace Syncfusion.GridPagingPerformance.Pages
         void OnTempCFilterChanged(int? value)
         {
             TempCFilter = value;
-            Refresh();
+            GridQuery = new Query().AddParams("TempCFilter", TempCFilter);
+            LastRefresh = DateTime.Now;
         }
 
         void Refresh()
@@ -74,22 +80,28 @@ namespace Syncfusion.GridPagingPerformance.Pages
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         [Inject]
         ILogger<CustomAdaptor> Logger { get; set; }
+
         [Inject]
         WeatherForecastContextFactory WeatherForecastContextFactoryInstance { get; set; }
-
-        [Parameter]
-        public int? TempCFilter { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
         public override object Read(DataManagerRequest dm, string? key = null)
         {
-            Logger.Here(l => l.Entering(dm.RequiresCounts, dm.Take, dm.Skip, TempCFilter!));
+            Logger.Here(l => l.Entering(dm.RequiresCounts, dm.Take, dm.Skip, dm.Params));
 
             using (var Context = WeatherForecastContextFactoryInstance.Create())
             {
+                int? tempCFilter = null;
+
+                // Query parameters
+                if (dm.Params != null && dm.Params.ContainsKey("TempCFilter") && dm.Params["TempCFilter"] != null)
+                {
+                    tempCFilter = (int)(long)dm.Params["TempCFilter"];
+                }
+
                 IQueryable<WeatherForecast> Requests = Context.Forecasts.AsQueryable();
-                if (TempCFilter != null)
-                    Requests = Requests.Where(item => item.TemperatureC == TempCFilter);
+                if (tempCFilter != null)
+                    Requests = Requests.Where(item => item.TemperatureC == tempCFilter);
                 Requests = Requests.OrderBy(item => item.Id).AsNoTracking();
 
                 if (dm.Search != null && dm.Search.Count > 0)
@@ -105,7 +117,7 @@ namespace Syncfusion.GridPagingPerformance.Pages
                 if (dm.Where != null && dm.Where.Count > 0)
                 {
                     // Filtering
-                    Requests = DataOperations.PerformFiltering(Requests, dm.Where, dm.Where[0].Operator);
+                    Requests = DataOperations.PerformFiltering(Requests, dm.Where, "and");
                 }
 
                 var pagedRequests = Requests;
@@ -113,11 +125,11 @@ namespace Syncfusion.GridPagingPerformance.Pages
                 if (dm.Skip != 0)
                 {
                     //Paging
-                    pagedRequests = DataOperations.PerformSkip(Requests, dm.Skip);
+                    pagedRequests = DataOperations.PerformSkip(pagedRequests, dm.Skip);
                 }
                 if (dm.Take != 0)
                 {
-                    pagedRequests = DataOperations.PerformTake(Requests, dm.Take);
+                    pagedRequests = DataOperations.PerformTake(pagedRequests, dm.Take);
                 }
 
                 if (dm.RequiresCounts)

@@ -5,10 +5,10 @@
 <p>Examine the Logs folder (should be created inside the project root, bin/Debug or bin/Release) and look for potentially unnecessary queries. Relevant log entries will start after entries containing "@(typeof(Index).FullName)".</p>
 <p>Current correlation id: @CorrelationAccessor.Current?.GetCorrelationId()</p>
 
-<SfGrid @ref="@Grid" AllowPaging="true" TValue="WeatherForecast" Width="100%">
+<SfGrid @ref="@Grid" AllowPaging="true" TValue="WeatherForecast" Query="@GridQuery" Width="100%">
     <GridPageSettings PageSize="10"></GridPageSettings>
     <SfDataManager Adaptor="Adaptors.CustomAdaptor">
-        <CustomAdaptor TempCFilter="@TempCFilter"></CustomAdaptor>
+        <CustomAdaptor></CustomAdaptor>
     </SfDataManager>
     <GridTemplates>
         <ToolbarTemplate>
@@ -17,7 +17,7 @@
                     <ToolbarItems>
                         <ToolbarItem Type="ItemType.Input">
                             <Template>
-                                <SfNumericTextBox TValue="int?" Value="@TempCFilter" ValueChanged="@OnTempCFilterChanged" Placeholder="TempCFilter" ShowClearButton="true"></SfNumericTextBox>
+                                <SfNumericTextBox TValue="int?" Value="@TempCFilter" ValueChanged="@OnTempCFilterChanged" Placeholder="TempCFilter" ShowClearButton="true" Min="0" Max="150"></SfNumericTextBox>
                             </Template>
                         </ToolbarItem>
                        

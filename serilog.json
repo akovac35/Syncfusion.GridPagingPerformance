@@ -5,7 +5,7 @@
       "Default": "Verbose",
       "Override": {
         "Microsoft": "Warning",
-        "Microsoft.EntityFrameworkCore.Database.Command": "Verbose"
+        "Microsoft.EntityFrameworkCore.Database.Command": "Warning"
       }
     },
     "Enrich": [
@@ -30,7 +30,7 @@
         "Name": "Console",
         "Args": {
           "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] {Level:u3} {ThreadId} {CorrelationId} <{SourceContext}:{CallerMemberName}:{CallerLineNumber}> {Message}{NewLine}{Exception}",
-          "restrictedToMinimumLevel": "Warning"
+          "restrictedToMinimumLevel": "Verbose"
         }
       },
       {
